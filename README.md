@@ -3,10 +3,10 @@
 COMP 3322 Software Engineering, Fall 2026. Team: **<team name>**
 
 | Member | GitHub username | Story I own |
-| --- | --- | --- |
-| | | |
-| | | |
-| | | |
+| DeCamre Roseway| DRoseway | -Story 2-- |
+| Ryan Williamson| rw05440| Story 6|
+|Zakavion Shepard|zshepard2 |Story 4 |
+|Chinebin Ogbuigwe | | Story 3|
 | | | |
 
 ## Set up your team repo (week 0, one member does steps 1-3)
