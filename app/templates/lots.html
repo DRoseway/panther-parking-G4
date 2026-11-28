@@ -1,8 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Parking lots</h1>
+
+{% if can_manage %}
+<section>
+  <h2>Create New Lot</h2>
+  <form method="post" action="{{ url_for('lots.create') }}">
+    <label for="name">Lot Name</label>
+    <input id="name" name="name" type="text" required placeholder="e.g., Lot 2 - North Deck">
+
+    <label for="zone">Location / Zone</label>
+    <input id="zone" name="zone" type="text" placeholder="e.g., North Campus">
+
+    <label for="capacity">Total Capacity</label>
+    <input id="capacity" name="capacity" type="number" min="1" required>
+
+    <label for="occupied">Initial Occupied</label>
+    <input id="occupied" name="occupied" type="number" min="0" value="0">
+
+    <button type="submit">Add Lot</button>
+  </form>
+</section>
+{% endif %}
+
 <table>
-  <thead><tr><th>Lot</th><th>Zone</th><th>Spaces available</th><th>Status</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Lot</th>
+      <th>Zone</th>
+      <th>Spaces available</th>
+      <th>Status</th>
+      {% if can_manage %}<th>Manage Capacity</th>{% endif %}
+    </tr>
+  </thead>
   <tbody>
   {% for lot in lots %}
     <tr>
@@ -10,9 +40,22 @@
       <td>{{ lot.zone }}</td>
       <td>{{ lot.available }} of {{ lot.capacity }}</td>
       <td class="{{ lot.status }}">{{ lot.status }}</td>
+      {% if can_manage %}
+      <td>
+        <form method="post" action="{{ url_for('lots.update', lot_id=lot.id) }}">
+          <label>Capacity
+            <input name="capacity" type="number" min="1" value="{{ lot.capacity }}" required>
+          </label>
+          <label>Occupied
+            <input name="occupied" type="number" min="0" value="{{ lot.occupied }}" required>
+          </label>
+          <button type="submit">Update</button>
+        </form>
+      </td>
+      {% endif %}
     </tr>
   {% else %}
-    <tr><td colspan="4">No lots yet.</td></tr>
+    <tr><td colspan="{{ 5 if can_manage else 4 }}">No lots yet.</td></tr>
   {% endfor %}
   </tbody>
 </table>
