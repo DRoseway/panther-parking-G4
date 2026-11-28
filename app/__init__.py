@@ -1,33 +1,36 @@
-"""Panther Parking application factory.
-
-Layers (see docs/architecture.md):
-    routes/        -> HTTP only: read the request, call a service, render a page
-    services/      -> business rules; no Flask request objects, no SQL
-    repositories/  -> all SQL lives here; returns plain dicts
-    db.py          -> connection + schema setup
-"""
-import os
-
 from flask import Flask
+from app.extensions import db as db_instance
+from app.db import init_db
 
+# Import model modules so SQLAlchemy registers both 'users' and 'vehicles' tables
+from app.models import user, vehicle
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get("SECRET_KEY", "dev-only-change-me"),
-        DATABASE=os.path.join(app.instance_path, "panther_parking.sqlite"),
-    )
-    if test_config:
-        app.config.update(test_config)
+def create_app(config_class=None):
+    app = Flask(__name__)
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///panther_parking.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = 'dev-secret-key'
 
-    os.makedirs(app.instance_path, exist_ok=True)
+    if config_class is not None:
+        if isinstance(config_class, dict):
+            app.config.from_mapping(config_class)
+        else:
+            app.config.from_object(config_class)
 
-    from . import db
-    db.init_app(app)
+    # Initialize extensions
+    db_instance.init_app(app)
+    
+    # NOTE: Removed init_db(app) here so tests can initialize tables dynamically with conftest.py
 
-    from .routes import auth, lots
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(lots.bp)
-    app.add_url_rule("/", endpoint="lots.index")
+    # Register Blueprints
+    from app.routes.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    from app.routes.lots import bp as lots_bp
+    app.register_blueprint(lots_bp, url_prefix='/lots')
+
+    from app.vehicles.routes import vehicles_bp
+    app.register_blueprint(vehicles_bp)
 
     return app

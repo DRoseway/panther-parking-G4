@@ -1,0 +1,65 @@
+
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Register Vehicle</h1>
+
+<form method="post" action="{{ url_for('vehicles.register') }}">
+  <label>
+    License Plate
+    <input type="text" name="license_plate" required>
+  </label>
+  <label>
+    Make
+    <input type="text" name="make" required>
+  </label>
+  <label>
+    Model
+    <input type="text" name="model" required>
+  </label>
+  <label>
+    Year
+    <input type="number" name="year" required>
+  </label>
+  <label>
+    Color
+    <input type="text" name="color" required>
+  </label>
+  <button type="submit">Register Vehicle</button>
+</form>
+
+<h2>My Registered Vehicles</h2>
+<table>
+  <thead>
+    <tr>
+      <th>License Plate</th>
+      <th>Make</th>
+      <th>Model</th>
+      <th>Year</th>
+      <th>Color</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for vehicle in vehicles %}
+    <tr>
+      <td>{{ vehicle.license_plate }}</td>
+      <td>{{ vehicle.make }}</td>
+      <td>{{ vehicle.model }}</td>
+      <td>{{ vehicle.year }}</td>
+      <td>{{ vehicle.color }}</td>
+      <td>
+        <form method="post" action="{{ url_for('vehicles.delete', plate=vehicle.license_plate) }}">
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6">No vehicles registered yet.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
