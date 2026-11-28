@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from app.services.vehicle_service import VehicleService
-from app.models.vehicle import Vehicle
+
 
 vehicles_bp = Blueprint('vehicles', __name__, url_prefix='/vehicles')
 
@@ -27,7 +27,7 @@ def register():
         except ValueError as e:
             flash(str(e), 'danger')
             
-    user_vehicles = Vehicle.query.filter_by(user_id=user_id).all()
+    user_vehicles = VehicleService.get_user_vehicles(user_id)
     return render_template('vehicles/register.html', vehicles=user_vehicles)
 
 @vehicles_bp.route('/delete/<plate>', methods=['POST'])

@@ -1,4 +1,4 @@
-from app.repositories.vehicle_repository import VehicleRepository
+﻿from app.repositories.vehicle_repository import VehicleRepository
 from app.models.vehicle import Vehicle
 
 class VehicleService:
@@ -7,10 +7,10 @@ class VehicleService:
         plate = data.get('license_plate')
         if not plate or not data.get('make') or not data.get('model'):
             raise ValueError("Required fields are missing.")
-            
+
         if VehicleRepository.find_by_plate(plate):
             raise ValueError("License plate already registered")
-            
+
         vehicle = Vehicle(
             license_plate=plate,
             make=data.get('make'),
@@ -21,6 +21,10 @@ class VehicleService:
         )
         VehicleRepository.save(vehicle)
         return vehicle
+
+    @staticmethod
+    def get_user_vehicles(user_id):
+        return VehicleRepository.get_by_user_id(user_id)
 
     @staticmethod
     def remove_vehicle(license_plate):
